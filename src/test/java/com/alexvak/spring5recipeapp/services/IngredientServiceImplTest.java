@@ -1,11 +1,14 @@
 package com.alexvak.spring5recipeapp.services;
 
 import com.alexvak.spring5recipeapp.commands.IngredientCommand;
+import com.alexvak.spring5recipeapp.converters.IngredientCommandToIngredient;
 import com.alexvak.spring5recipeapp.converters.IngredientToIngredientCommand;
+import com.alexvak.spring5recipeapp.converters.UnitOfMeasureCommandToUnitOfMeasure;
 import com.alexvak.spring5recipeapp.converters.UnitOfMeasureToUnitOfMeasureCommand;
 import com.alexvak.spring5recipeapp.domain.Ingredient;
 import com.alexvak.spring5recipeapp.domain.Recipe;
 import com.alexvak.spring5recipeapp.repositories.RecipeRepository;
+import com.alexvak.spring5recipeapp.repositories.UnitOfMeasureRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -21,6 +24,8 @@ public class IngredientServiceImplTest {
 
     @Mock
     private RecipeRepository recipeRepository;
+    @Mock
+    private UnitOfMeasureRepository unitOfMeasureRepository;
 
     private IngredientService ingredientService;
 
@@ -28,7 +33,9 @@ public class IngredientServiceImplTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         IngredientToIngredientCommand ingredientToIngredientCommand = new IngredientToIngredientCommand(new UnitOfMeasureToUnitOfMeasureCommand());
-        ingredientService = new IngredientServiceImpl(recipeRepository, ingredientToIngredientCommand);
+        IngredientCommandToIngredient ingredientCommandToIngredient = new IngredientCommandToIngredient(new UnitOfMeasureCommandToUnitOfMeasure());
+        ingredientService = new IngredientServiceImpl(recipeRepository, unitOfMeasureRepository,
+                ingredientToIngredientCommand, ingredientCommandToIngredient);
     }
 
     @Test
@@ -61,4 +68,31 @@ public class IngredientServiceImplTest {
         assertEquals(Long.valueOf(1L), ingredientCommand.getRecipeId());
         verify(recipeRepository, times(1)).findById(anyLong());
     }
+
+    @Test
+    public void testSaveRecipeCommand() {
+        //given
+        IngredientCommand ingredientCommand = new IngredientCommand();
+        ingredientCommand.setId(3L);
+        ingredientCommand.setRecipeId(2L);
+
+        Optional<Recipe> recipeOptional = Optional.of(new Recipe());
+
+        Recipe savedRecipe = new Recipe();
+        savedRecipe.addIngredient(new Ingredient());
+        savedRecipe.getIngredients().iterator().next().setId(3L);
+
+        when(recipeRepository.findById(anyLong())).thenReturn(recipeOptional);
+        when(recipeRepository.save(any())).thenReturn(savedRecipe);
+
+        //when
+        IngredientCommand savedCommand = ingredientService.saveIngredientCommand(ingredientCommand);
+
+        //then
+        assertEquals(Long.valueOf(3L), savedCommand.getId());
+        verify(recipeRepository, times(1)).findById(anyLong());
+        verify(recipeRepository, times(1)).save(any(Recipe.class));
+
+    }
+
 }
