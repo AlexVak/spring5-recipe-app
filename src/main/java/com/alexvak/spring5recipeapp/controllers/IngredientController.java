@@ -1,6 +1,9 @@
 package com.alexvak.spring5recipeapp.controllers;
 
 import com.alexvak.spring5recipeapp.commands.IngredientCommand;
+import com.alexvak.spring5recipeapp.commands.RecipeCommand;
+import com.alexvak.spring5recipeapp.commands.UnitOfMeasureCommand;
+import com.alexvak.spring5recipeapp.exceptions.RecipeNotFoundException;
 import com.alexvak.spring5recipeapp.services.IngredientService;
 import com.alexvak.spring5recipeapp.services.RecipeService;
 import com.alexvak.spring5recipeapp.services.UnitOfMeasureService;
@@ -8,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @Slf4j
 @Controller
@@ -63,6 +68,29 @@ public class IngredientController {
                 ingredientService.findByRecipeIdAndIngredientId(Long.valueOf(recipeId), Long.valueOf(ingredientId)));
 
         model.addAttribute("uomList", unitOfMeasureService.listAllUoms());
+
+        return "recipe/ingredient/ingredientform";
+    }
+
+    @GetMapping
+    @RequestMapping("/recipe/{recipeId}/ingredient/new")
+    public String newIngredient(
+            @PathVariable String recipeId,
+            Model model) {
+
+        RecipeCommand recipeCommand = recipeService.findCommandById(Long.valueOf(recipeId));
+
+        if (Objects.isNull(recipeCommand)) {
+            throw new RecipeNotFoundException(recipeId);
+        }
+
+        IngredientCommand command = new IngredientCommand();
+        command.setRecipeId(recipeCommand.getId());
+        model.addAttribute("ingredient", command);
+
+        command.setUom(new UnitOfMeasureCommand());
+        model.addAttribute("uomList", unitOfMeasureService.listAllUoms());
+
 
         return "recipe/ingredient/ingredientform";
     }
