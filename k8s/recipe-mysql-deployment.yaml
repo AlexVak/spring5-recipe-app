@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recipe-mysql-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: recipe-mysql
+  template:
+    metadata:
+      labels:
+        component: recipe-mysql
+    spec:
+      volumes:
+        - name: recipe-mysql-storage
+          persistentVolumeClaim:
+            claimName: recipe-app-persistent-valume-claim
+      containers:
+        - name: recipe-mysql
+          image: alexvak/mysql-recipe-app
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: recipe-mysql-storage
+              subPath: mysql
+          env:
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysqlpassword
+                  key: MYSQL_PASSWORD
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysqlpassword
+                  key: MYSQL_PASSWORD
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: 100m

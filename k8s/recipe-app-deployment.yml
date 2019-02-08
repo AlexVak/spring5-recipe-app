@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recipe-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: recipe-app
+  template:
+    metadata:
+      labels:
+        component: recipe-app
+    spec:
+      containers:
+        - name: recipe-app
+          image: alexvak/spring5-recipe-app
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+            - name: MYSQL_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysqlpassword
+                  key: MYSQL_PASSWORD
+          resources:
+            limits:
+              memory: 600Mi
+              cpu: 120m

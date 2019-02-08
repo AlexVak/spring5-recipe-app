@@ -20,4 +20,4 @@ spring:
 #            create-source: metadata
 #            scripts:
 #              action: create
-#              create-target: schema-generation-mysql.sql
+#              create-target: docker-files/mysql/schema-generation-mysql.sql
