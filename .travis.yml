@@ -7,11 +7,11 @@ env:
     - SHA=$(git rev-parse HEAD)
     - CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
-  - openssl aes-256-cbc -K $encrypted_c115264f075c_key -iv $encrypted_c115264f075c_iv -in service-account.json.enc -out service-account.json -d
+  - openssl aes-256-cbc -K $encrypted_c115264f075c_key -iv $encrypted_c115264f075c_iv -in com-alexvak-c352c0921585.json.enc -out com-alexvak-c352c0921585.json -d
   - curl https://sdk.cloud.google.com | bash > /dev/null;
   - source $HOME/google-cloud-sdk/path.bash.inc
   - gcloud components update kubectl
-  - gcloud auth activate-service-account --key-file service-account.json
+  - gcloud auth activate-service-account --key-file com-alexvak-c352c0921585.json
   - gcloud config set project com-alexvak
   - gcloud config set compute/zone us-central1-a
   - gcloud container clusters get-credentials alexvak-cluster
