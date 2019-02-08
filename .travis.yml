@@ -6,9 +6,6 @@ env:
   global:
     - SHA=$(git rev-parse HEAD)
     - CLOUDSDK_CORE_DISABLE_PROMPTS=1
-cache:
-  directories:
-    - ./mycache
 before_install:
   - openssl aes-256-cbc -K $encrypted_c115264f075c_key -iv $encrypted_c115264f075c_iv -in com-alexvak-c352c0921585.json.enc -out com-alexvak-c352c0921585.json -d
   - curl https://sdk.cloud.google.com | bash > /dev/null;
@@ -22,7 +19,6 @@ before_install:
 
 script:
   - mvn clean install
-  - cp target/spring5-recipe-app-0.0.1-SNAPSHOT.jar ./mycache/app.jar
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
