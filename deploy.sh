@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+ls
+
 docker build -t alexvak/spring5-recipe-app:latest -t alexvak/spring5-recipe-app:$SHA -f ./docker-files/recipe-app/Dockerfile .
 
 docker push alexvak/spring5-recipe-app:latest
