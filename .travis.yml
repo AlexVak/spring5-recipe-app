@@ -18,7 +18,7 @@ before_install:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
 script:
-  - mvn integration-test
+  - mvn clean install
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
