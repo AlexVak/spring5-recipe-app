@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: recipe-app-ingress-service
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    certmanager.k8s.io/cluster-issuer: 'recipe-letsencrypt-prod'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+spec:
+  tls:
+    - hosts:
+        - recipe.alexvak.com
+        - www.recipe.alexvak.com
+      secretName: recipe-alexvak-com
+  rules:
+    - host: recipe.alexvak.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: recipe-app-cluster-ip-service
+              servicePort: 8080
+    - host: www.recipe.alexvak.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: recipe-app-cluster-ip-service
+              servicePort: 8080
